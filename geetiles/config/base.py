@@ -2,7 +2,9 @@
 
 import os
 from geetiles.utils.files import BASE_DIR
+from dotenv import load_dotenv
 
+load_dotenv()
 
 SETTINGS = {
     'logging': {
@@ -15,7 +17,10 @@ SETTINGS = {
         'url': os.getenv('REDIS_URL')
     },
     'gee': {
-        'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
-        'privatekey_file': BASE_DIR + '/privatekey.pem'
+        'service_account': 'earth-engine@notional-impact-169016.iam.gserviceaccount.com',
+        'privatekey_file': BASE_DIR + '/privatekey.json'
+    },
+    'storage': {
+        "bucket": os.getenv('GOOGLE_CLOUD_BUCKET')
     }
 }

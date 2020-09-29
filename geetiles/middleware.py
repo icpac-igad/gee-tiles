@@ -29,6 +29,10 @@ def exist_mapid(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         layer = kwargs['layer']
+        z = kwargs['z']
+        x = kwargs['x']
+        y = kwargs['y']
+        layer = kwargs['layer'] + x + y + z
         logging.debug('Checking if exist in cache layer ' + layer)
         kwargs["map_object"] = RedisService.check_layer_mapid(layer)
         return func(*args, **kwargs)
@@ -66,6 +70,7 @@ def get_layer(func):
         except LayerNotFound as e:
             return error(status=404, detail=e.message)
         except Exception as e:
+            logging.exception("Error")
             return error(detail='Generic error')
 
     return wrapper

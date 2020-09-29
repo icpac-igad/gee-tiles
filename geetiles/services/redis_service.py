@@ -1,12 +1,15 @@
 """ Redis service """
 
-import redis
 import json
-import logging
+
+import redis
 
 from geetiles.config import SETTINGS
 
+print(SETTINGS.get('redis').get('url'))
+
 r = redis.StrictRedis.from_url(url=SETTINGS.get('redis').get('url'))
+
 
 class RedisService(object):
 
@@ -30,7 +33,7 @@ class RedisService(object):
 
     @staticmethod
     def expire_layer(layer):
-        for key in r.scan_iter("*"+layer+"*"):
+        for key in r.scan_iter("*" + layer + "*"):
             r.delete(key)
 
     @staticmethod

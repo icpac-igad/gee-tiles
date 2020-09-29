@@ -4,8 +4,8 @@ set -e
 case "$1" in
     develop)
         echo "Running Development Server"
-        echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
-        echo -e "$GCLOUD_STORAGE" | base64 -d > storage.json
+#        echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
+#        echo -e "$GCLOUD_STORAGE" | base64 -d > storage.json
         exec python main.py
         ;;
     test)
@@ -16,8 +16,8 @@ case "$1" in
         ;;
     start)
         echo "Running Start"
-        echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
-        echo -e "$GCLOUD_STORAGE" | base64 -d > storage.json
+#        echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
+#        echo -e "$GCLOUD_STORAGE" | base64 -d > storage.json
         exec gunicorn -c gunicorn.py geetiles:app
         ;;
     *)

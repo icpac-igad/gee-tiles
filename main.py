@@ -3,6 +3,9 @@
 import os
 from geetiles import app
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # This is only used when running locally. When running live, Gunicorn runs
 # the application.

@@ -1,15 +1,14 @@
 """API ROUTER"""
 
 import logging
-import json
 
-from flask import jsonify, Blueprint, redirect, request
-from geetiles.routes.api import error
+import ee
+from flask import Blueprint, redirect
+
 from geetiles.middleware import exist_mapid, get_layer, exist_tile, is_microservice_or_admin
+from geetiles.routes.api import error
 from geetiles.services.redis_service import RedisService
 from geetiles.services.storage_service import StorageService
-import ee
-
 
 tile_endpoints = Blueprint('tile_endpoints', __name__)
 
@@ -37,7 +36,6 @@ def get_tile(layer, z, x, y, map_object=None, layer_obj=None):
             logging.debug('Generating mapid')
             layer_config = layer_obj.get('layerConfig')
             style_type = layer_config.get('body').get('styleType')
-            image = None
             if 'isImageCollection' not in layer_config or not layer_config.get('isImageCollection'):
                 image = ee.Image(layer_config.get('assetId'))
             else:
@@ -52,7 +50,7 @@ def get_tile(layer, z, x, y, map_object=None, layer_obj=None):
                 else:
                     logging.info('Obtaining last')
                     image = ee.Image(image_col.sort('system:time_start', False).first())
-            
+
             if style_type == 'sld':
                 style = layer_config.get('body').get('sldValue')
                 map_object = image.sldStyle(style).getMapId()
@@ -60,7 +58,9 @@ def get_tile(layer, z, x, y, map_object=None, layer_obj=None):
                 map_object = image.getMapId(layer_config.get('body'))
 
             logging.debug('Saving in cache')
-            RedisService.set_layer_mapid(layer, map_object.get('mapid'), map_object.get('token'))
+            RedisService.set_layer_mapid(layer + x + y + z, map_object.get('mapid'),
+                                         map_object.get('token'))
+
     except Exception as e:
         logging.error(str(e))
         return error(status=500, detail='Error generating tile: ' + str(e))
@@ -68,6 +68,6 @@ def get_tile(layer, z, x, y, map_object=None, layer_obj=None):
         url = ee.data.getTileUrl(map_object, int(x), int(y), int(z))
         storage_url = StorageService.upload_file(url, layer, map_object.get('mapid'), z, x, y)
     except Exception as e:
-        logging.error(str(e))
+        logging.exception(str(e))
         return error(status=404, detail='Tile Not Found')
     return redirect(storage_url)
