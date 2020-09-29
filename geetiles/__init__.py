@@ -6,6 +6,7 @@ import os
 import CTRegisterMicroserviceFlask
 import ee
 from flask import Flask
+from flask_cors import CORS
 
 from geetiles.config import SETTINGS
 from geetiles.routes.api import error
@@ -33,6 +34,9 @@ else:
 
 # Flask App
 app = Flask(__name__)
+
+# Cors
+CORS(app)
 
 # Routing
 app.register_blueprint(tile_endpoints, url_prefix='/api/v1/layer')
